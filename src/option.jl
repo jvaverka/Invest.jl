@@ -34,7 +34,7 @@ struct American <: Option
         u::Float64,
         d::Float64,
         r::Float64,
-        T::Float64
+        T::Float64,
     )
         return new(S,
             K,
@@ -44,7 +44,7 @@ struct American <: Option
             1 + r / 12,
             ((1 + r / 12) - d) / (u - d),
             T,
-            0.0
+            0.0,
         )
     end
     function American(
@@ -54,7 +54,7 @@ struct American <: Option
         d::Float64,
         r::Float64,
         T::Float64,
-        t::Int64
+        t::Int64,
     )
         return new(
             S,
@@ -65,7 +65,7 @@ struct American <: Option
             1 + r / 12,
             ((1 + r / 12) - d) / (u - d),
             T,
-            Float64(t)
+            Float64(t),
         )
     end
 end
@@ -87,7 +87,7 @@ struct European <: Option
         K::Float64,
         r::Float64,
         σ::Float64,
-        T::Float64
+        T::Float64,
     )
         return new(S, K, r, σ, T, 0.0)
     end
@@ -97,12 +97,11 @@ struct European <: Option
         r::Float64,
         σ::Float64,
         T::Float64,
-        t::Int64
+        t::Int64,
     )
         return new(S, K, r, σ, T, Float64(t))
     end
 end
-
 
 # #######################
 # Option Pricing formulas
@@ -207,7 +206,7 @@ We know that:
 ∴ f ≈ Δ * δS + \frac{1}{2}Γ * (δS)^{2} + Θ * δt
 '''
 """
-function dprice(o::Option, δS, δt)
+function dprice(o::Option, δS, δt,)
   return (cprice(o, δS, δt), pprice(o, δS, δt))
 end
 
@@ -216,7 +215,7 @@ end
 
 Return underlying derivative value of call option.
 """
-function cprice(o::Option, δS, δt)
+function cprice(o::Option, δS, δt,)
   C, _ = price(o)
   return C + Δ(o)[1] * δS + 0.5Γ(o) * δS^2 + Θ(o) * δt
 end
@@ -228,7 +227,7 @@ end
 
 Return underlying derivative value of put option.
 """
-function pprice(o::Option, δS, δt)
+function pprice(o::Option, δS, δt,)
   _, P = price(o)
   return P + Δ(o)[2] * δS + 0.5Γ(o) * δS^2 + Θ(o) * δt
 end
