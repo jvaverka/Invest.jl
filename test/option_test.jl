@@ -3,12 +3,16 @@ using Test
 
 @testset "American" begin
     american = American(1.0, 2.0, 1.1, 0.9, 0.01, 5 / 12)
+    usa = American(1.0, 2.0, 1.1, 0.9, 0.01, 5 / 12, 1)
     @test isa(american, American)
+    @test isa(usa, American)
 end
 
 @testset "European" begin
     european = European(1.0, 2.0, 0.1, 0.3, 5 / 12)
+    euro = European(1.0, 2.0, 0.1, 0.3, 5 / 12, 1)
     @test isa(european, European)
+    @test isa(euro, European)
 end
 
 # TODO: Add tests for American options with calculated σ
