@@ -3,6 +3,10 @@ uuid = "f369fa3e-e51a-48b6-8512-0e570e365f91"
 authors = ["Jake Vaverka"]
 version = "0.1.0"
 
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
+
 [compat]
 julia = "1.6"
 

@@ -1,6 +1,6 @@
 using Invest
 using Test
 
-@testset "Invest.jl" begin
-    # Write your tests here.
+@testset "Invest" begin
+  @testset "Option" begin include("option_test.jl"); end
 end
