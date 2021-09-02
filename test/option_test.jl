@@ -1,4 +1,5 @@
-using Invest, Test
+using Invest
+using Test
 
 @testset "American" begin
     american = American(1.0, 2.0, 1.1, 0.9, 0.01, 5 / 12)

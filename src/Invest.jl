@@ -2,21 +2,24 @@ module Invest
 
 include("option.jl")
 
-export American, European
-export price   # premium
-export Δ, Γ, Θ # greeks
-export isat    # the money
-export dprice  # derivative
+export American
+export European
+export Δ
+export Γ
+export Θ
+export isat
+export price
+export dprice
 
 include("interest.jl")
 
-export yearly_compounded_interest,
-       find_effective_rate,
-       irr,
-       npv,
-       aer,
-       cci,
-       pv,
-       present_value
+export aer
+export cci
+export find_effective_rate
+export irr
+export npv
+export pv
+export present_value
+export yearly_compounded_interest
 
 end
