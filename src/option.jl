@@ -125,6 +125,9 @@ end
 # Option Greeks
 # #######################
 
+# TODO: add functions for checking 'in' and 'out' of money
+# NOTE: need to revisit put-call distinction to do above
+
 """
     isat(o::Option)
 
