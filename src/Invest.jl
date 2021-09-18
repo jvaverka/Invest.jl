@@ -2,8 +2,8 @@ module Invest
 
 include("option.jl")
 
-export American
-export European
+export AmericanCall, AmericanPut
+export EuropeanCall, EuropeanPut
 export Δ
 export Γ
 export Θ

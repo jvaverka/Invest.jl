@@ -1,8 +1,6 @@
 using Distributions
 using UnPack
 
-# NOTE: Refactor so that call & put options are distinguishable (at construction).
-
 """
   Option
 
@@ -10,15 +8,17 @@ Any contract representing the right, but not the
 obligation to buy or sell a derivative at some point in time.
 """
 abstract type Option end
+abstract type AmericanOption <: Option end
+abstract type EuropeanOption <: Option end
 
 # NOTE: American option doesn't have volatility (σ). Can it be Calculated?
 
 """
-  American Option
+  AmericanCall Option
 
 An option which can be exercised at any point up to maturity.
 """
-struct American <: Option
+struct AmericanCall <: AmericanOption
     S::Float64  # stock price
     K::Float64  # strike price
     u::Float64  # up-trend
@@ -28,7 +28,7 @@ struct American <: Option
     q::Float64  # (R - d) / (u - d)
     T::Float64  # maturity in months
     t::Float64  # point in time
-    function American(
+    function AmericanCall(
         S::Float64,
         K::Float64,
         u::Float64,
@@ -47,7 +47,7 @@ struct American <: Option
             0.0,
         )
     end
-    function American(
+    function AmericanCall(
         S::Float64,
         K::Float64,
         u::Float64,
@@ -71,18 +71,75 @@ struct American <: Option
 end
 
 """
-  European Option
+  AmericanPut Option
+
+An option which can be exercised at any point up to maturity.
+"""
+struct AmericanPut <: AmericanOption
+    S::Float64  # stock price
+    K::Float64  # strike price
+    u::Float64  # up-trend
+    d::Float64  # down-trend
+    r::Float64  # annual rate
+    R::Float64  # risk-free rate => 1 + r
+    q::Float64  # (R - d) / (u - d)
+    T::Float64  # maturity in months
+    t::Float64  # point in time
+    function AmericanPut(
+        S::Float64,
+        K::Float64,
+        u::Float64,
+        d::Float64,
+        r::Float64,
+        T::Float64,
+    )
+        return new(S,
+            K,
+            u,
+            d,
+            r / 12,
+            1 + r / 12,
+            ((1 + r / 12) - d) / (u - d),
+            T,
+            0.0,
+        )
+    end
+    function AmericanPut(
+        S::Float64,
+        K::Float64,
+        u::Float64,
+        d::Float64,
+        r::Float64,
+        T::Float64,
+        t::Int64,
+    )
+        return new(
+            S,
+            K,
+            u,
+            d,
+            r / 12,
+            1 + r / 12,
+            ((1 + r / 12) - d) / (u - d),
+            T,
+            Float64(t),
+        )
+    end
+end
+
+"""
+  EuropeanCall Option
 
 An option which can only be exercised at maturity.
 """
-struct European <: Option
+struct EuropeanCall <: EuropeanOption
     S::Float64  # stock price
     K::Float64  # strike price
     r::Float64  # rate
     σ::Float64  # volatility
     T::Float64  # maturity period
     t::Float64  # point in time
-    function European(
+    function EuropeanCall(
         S::Float64,
         K::Float64,
         r::Float64,
@@ -91,7 +148,40 @@ struct European <: Option
     )
         return new(S, K, r, σ, T, 0.0)
     end
-    function European(
+    function EuropeanCall(
+        S::Float64,
+        K::Float64,
+        r::Float64,
+        σ::Float64,
+        T::Float64,
+        t::Int64,
+    )
+        return new(S, K, r, σ, T, Float64(t))
+    end
+end
+
+"""
+  EuropeanPut Option
+
+An option which can only be exercised at maturity.
+"""
+struct EuropeanPut <: EuropeanOption
+    S::Float64  # stock price
+    K::Float64  # strike price
+    r::Float64  # rate
+    σ::Float64  # volatility
+    T::Float64  # maturity period
+    t::Float64  # point in time
+    function EuropeanPut(
+        S::Float64,
+        K::Float64,
+        r::Float64,
+        σ::Float64,
+        T::Float64,
+    )
+        return new(S, K, r, σ, T, 0.0)
+    end
+    function EuropeanPut(
         S::Float64,
         K::Float64,
         r::Float64,
@@ -112,7 +202,7 @@ end
 
 Returns a tuple of the call & put premiums of a European Option.
 """
-function price(e::European)
+function price(e::EuropeanOption)
     @unpack S, K, r, σ, T, t = e
     d₁ = (log(S / K) + (r + 0.5σ^2) * (T - t)) / (σ * √(T - t))
     d₂ = d₁ - σ * √(T - t)
@@ -126,7 +216,6 @@ end
 # #######################
 
 # TODO: add functions for checking 'in' and 'out' of money
-# NOTE: need to revisit put-call distinction to do above
 
 """
     isat(o::Option)
