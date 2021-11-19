@@ -29,43 +29,15 @@ struct AmericanCall <: AmericanOption
     T::Float64  # maturity in months
     t::Float64  # point in time
     function AmericanCall(
-        S::Float64,
-        K::Float64,
-        u::Float64,
-        d::Float64,
-        r::Float64,
-        T::Float64,
+        S::Float64, K::Float64, u::Float64, d::Float64, r::Float64, T::Float64
     )
-        return new(S,
-            K,
-            u,
-            d,
-            r / 12,
-            1 + r / 12,
-            ((1 + r / 12) - d) / (u - d),
-            T,
-            0.0,
-        )
+        return new(S, K, u, d, r / 12, 1 + r / 12, ((1 + r / 12) - d) / (u - d), T, 0.0)
     end
     function AmericanCall(
-        S::Float64,
-        K::Float64,
-        u::Float64,
-        d::Float64,
-        r::Float64,
-        T::Float64,
-        t::Int64,
+        S::Float64, K::Float64, u::Float64, d::Float64, r::Float64, T::Float64, t::Int64
     )
         return new(
-            S,
-            K,
-            u,
-            d,
-            r / 12,
-            1 + r / 12,
-            ((1 + r / 12) - d) / (u - d),
-            T,
-            Float64(t),
+            S, K, u, d, r / 12, 1 + r / 12, ((1 + r / 12) - d) / (u - d), T, Float64(t)
         )
     end
 end
@@ -86,43 +58,15 @@ struct AmericanPut <: AmericanOption
     T::Float64  # maturity in months
     t::Float64  # point in time
     function AmericanPut(
-        S::Float64,
-        K::Float64,
-        u::Float64,
-        d::Float64,
-        r::Float64,
-        T::Float64,
+        S::Float64, K::Float64, u::Float64, d::Float64, r::Float64, T::Float64
     )
-        return new(S,
-            K,
-            u,
-            d,
-            r / 12,
-            1 + r / 12,
-            ((1 + r / 12) - d) / (u - d),
-            T,
-            0.0,
-        )
+        return new(S, K, u, d, r / 12, 1 + r / 12, ((1 + r / 12) - d) / (u - d), T, 0.0)
     end
     function AmericanPut(
-        S::Float64,
-        K::Float64,
-        u::Float64,
-        d::Float64,
-        r::Float64,
-        T::Float64,
-        t::Int64,
+        S::Float64, K::Float64, u::Float64, d::Float64, r::Float64, T::Float64, t::Int64
     )
         return new(
-            S,
-            K,
-            u,
-            d,
-            r / 12,
-            1 + r / 12,
-            ((1 + r / 12) - d) / (u - d),
-            T,
-            Float64(t),
+            S, K, u, d, r / 12, 1 + r / 12, ((1 + r / 12) - d) / (u - d), T, Float64(t)
         )
     end
 end
@@ -139,22 +83,11 @@ struct EuropeanCall <: EuropeanOption
     σ::Float64  # volatility
     T::Float64  # maturity period
     t::Float64  # point in time
-    function EuropeanCall(
-        S::Float64,
-        K::Float64,
-        r::Float64,
-        σ::Float64,
-        T::Float64,
-    )
+    function EuropeanCall(S::Float64, K::Float64, r::Float64, σ::Float64, T::Float64)
         return new(S, K, r, σ, T, 0.0)
     end
     function EuropeanCall(
-        S::Float64,
-        K::Float64,
-        r::Float64,
-        σ::Float64,
-        T::Float64,
-        t::Int64,
+        S::Float64, K::Float64, r::Float64, σ::Float64, T::Float64, t::Int64
     )
         return new(S, K, r, σ, T, Float64(t))
     end
@@ -172,22 +105,11 @@ struct EuropeanPut <: EuropeanOption
     σ::Float64  # volatility
     T::Float64  # maturity period
     t::Float64  # point in time
-    function EuropeanPut(
-        S::Float64,
-        K::Float64,
-        r::Float64,
-        σ::Float64,
-        T::Float64,
-    )
+    function EuropeanPut(S::Float64, K::Float64, r::Float64, σ::Float64, T::Float64)
         return new(S, K, r, σ, T, 0.0)
     end
     function EuropeanPut(
-        S::Float64,
-        K::Float64,
-        r::Float64,
-        σ::Float64,
-        T::Float64,
-        t::Int64,
+        S::Float64, K::Float64, r::Float64, σ::Float64, T::Float64, t::Int64
     )
         return new(S, K, r, σ, T, Float64(t))
     end
@@ -223,7 +145,7 @@ end
 Returns true if an option is "at the money".
 """
 function isat(o::Option)
-  return o.S == o.K
+    return o.S == o.K
 end
 
 """
@@ -244,11 +166,11 @@ price.
 A strategy of rebalancing a portfolio's components such that the portfolio delta is zero.
 """
 function Δ(o::Option)
-  @unpack S, K, r, σ, T, t = o
-  d₁ = (log(S / K) + (r + 0.5σ^2) * (T - t)) / (σ * √(T - t))
-  C = cdf(Normal(), d₁)
-  P = -cdf(Normal(), -d₁)
-  return (C, P)
+    @unpack S, K, r, σ, T, t = o
+    d₁ = (log(S / K) + (r + 0.5σ^2) * (T - t)) / (σ * √(T - t))
+    C = cdf(Normal(), d₁)
+    P = -cdf(Normal(), -d₁)
+    return (C, P)
 end
 
 """
@@ -258,9 +180,9 @@ The Gamma measures the rate of change of a derivative's ``Δ`` with respect to i
 underlying stock price. 
 """
 function Γ(o::Option)
-  @unpack S, K, r, σ, T, t = o
-  d₁ = (log(S / K) + (r + 0.5σ^2) * (T - t)) / (σ * √(T - t))
-  return pdf(Normal(), d₁) / (S * σ * √(T - t))
+    @unpack S, K, r, σ, T, t = o
+    d₁ = (log(S / K) + (r + 0.5σ^2) * (T - t)) / (σ * √(T - t))
+    return pdf(Normal(), d₁) / (S * σ * √(T - t))
 end
 
 """
@@ -272,7 +194,7 @@ function Θ(o::Option)
     @unpack S, K, r, σ, T, t = o
     d₁ = (log(S / K) + (r + 0.5σ^2) * (T - t)) / (σ * √(T - t))
     d₂ = d₁ - σ * √(T - t)
-    first = (S * pdf(Normal(), d₁) * σ ) / (2 * √(T - t))
+    first = (S * pdf(Normal(), d₁) * σ) / (2 * √(T - t))
     second = r * K * exp(-r * (T - t)) * cdf(Normal(), d₂)
     return (-first - second) / 365
 end
@@ -298,8 +220,8 @@ We know that:
 ∴ f ≈ Δ * δS + \frac{1}{2}Γ * (δS)^{2} + Θ * δt
 '''
 """
-function dprice(o::Option, δS, δt,)
-  return (cprice(o, δS, δt), pprice(o, δS, δt))
+function dprice(o::Option, δS, δt)
+    return (cprice(o, δS, δt), pprice(o, δS, δt))
 end
 
 """
@@ -307,9 +229,9 @@ end
 
 Return underlying derivative value of call option.
 """
-function cprice(o::Option, δS, δt,)
-  C, _ = price(o)
-  return C + Δ(o)[1] * δS + 0.5Γ(o) * δS^2 + Θ(o) * δt
+function cprice(o::Option, δS, δt)
+    C, _ = price(o)
+    return C + Δ(o)[1] * δS + 0.5Γ(o) * δS^2 + Θ(o) * δt
 end
 
 # WARNING: Need to verifty `pprice` formula
@@ -319,8 +241,7 @@ end
 
 Return underlying derivative value of put option.
 """
-function pprice(o::Option, δS, δt,)
-  _, P = price(o)
-  return P + Δ(o)[2] * δS + 0.5Γ(o) * δS^2 + Θ(o) * δt
+function pprice(o::Option, δS, δt)
+    _, P = price(o)
+    return P + Δ(o)[2] * δS + 0.5Γ(o) * δS^2 + Θ(o) * δt
 end
-
